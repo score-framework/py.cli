@@ -34,13 +34,26 @@ with open(os.path.join(here, 'README.rst')) as f:
 setup(
     name='score.cli',
     version='0.1.1',
-    description='Command line applications for The SCORE Framework',
+    description='Command line interface to The SCORE Framework',
     long_description=README,
     author='strg.at',
     author_email='score@strg.at',
     url='http://score-framework.org',
-    keywords='score framework cli',
+    keywords='score framework cli click',
     packages=['score.cli'],
+    license='LGPL',
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU Lesser General '
+            'Public License v3 or later (LGPLv3+)',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Topic :: Software Development :: Libraries :: Application Frameworks',
+    ],
     install_requires=[
         'click'
     ],
