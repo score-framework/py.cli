@@ -33,7 +33,7 @@ with open(os.path.join(here, 'README.rst')) as f:
 
 setup(
     name='score.cli',
-    version='0.1.1',
+    version='0.1.2',
     description='Command line interface to The SCORE Framework',
     long_description=README,
     author='strg.at',
@@ -41,6 +41,8 @@ setup(
     url='http://score-framework.org',
     keywords='score framework cli click',
     packages=['score.cli'],
+    namespace_packages=['score'],
+    zip_safe=False,
     license='LGPL',
     classifiers=[
         'Development Status :: 4 - Beta',
