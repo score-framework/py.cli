@@ -369,7 +369,7 @@ def config_folder(name=None, create=True, global_=False):
     root = os.path.join(root, '.score')
     if name:
         folder = os.path.join(root, name)
-        if os.path.commonprefix(folder, root) != root:
+        if os.path.commonprefix((folder, root)) != root:
             raise ValueError('Invalid path "%s"' % name)
     else:
         folder = root
