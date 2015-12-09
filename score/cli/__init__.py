@@ -61,7 +61,8 @@ class PluginCommand(click.MultiCommand):
         '''), '  '))
         formatter.write_paragraph()
         formatter.write_text(textwrap.indent(textwrap.dedent('''
-            You can use the following in your packages setup.py to register a sub-command called `mysub':
+            You can use the following in your packages setup.py to
+            register a sub-command called `mysub':
         '''), '  '))
         formatter.write(textwrap.indent(textwrap.dedent('''
             entry_points={
@@ -76,4 +77,3 @@ main = PluginCommand()
 
 if __name__ == '__main__':
     main()
-
