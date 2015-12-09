@@ -83,9 +83,12 @@ class ConfigSection:
         return len(self.keys())
 
     def get(self, key, fallback=NO_VALUE):
-        if fallback == NO_VALUE:
-            return self.cache[key]
-        return self.cache.get(key, fallback)
+        try:
+            return self[key]
+        except KeyError:
+            if fallback == NO_VALUE:
+                raise
+            return fallback
 
     def keys(self):
         keys = set()
