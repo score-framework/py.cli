@@ -40,7 +40,7 @@ setup(
     author_email='score@strg.at',
     url='http://score-framework.org',
     keywords='score framework cli click',
-    packages=['score.cli'],
+    packages=['score', 'score.cli'],
     namespace_packages=['score'],
     zip_safe=False,
     license='LGPL',
