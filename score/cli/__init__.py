@@ -24,56 +24,11 @@
 # the discretion of STRG.AT GmbH also the competent court, in whose district the
 # Licensee has his registered seat, an establishment or assets.
 
-import click
-from .config import config
-from pkg_resources import iter_entry_points
-import textwrap
+from .clibase import ScoreCLI, main
 
 
-class PluginCommand(click.MultiCommand):
-    """
-    Master command loading sub-commands from plugins.
-    """
+__all__ = ('ScoreCLI', 'main')
 
-    def list_commands(self, ctx):
-        result = []
-        for entrypoint in iter_entry_points(group='score.cli'):
-            result.append(entrypoint.name)
-        result.sort()
-        return result
-
-    def get_command(self, ctx, name):
-        plugins = list(iter_entry_points(group='score.cli', name=name))
-        if len(plugins) == 0:
-            message = 'Entry point "%s" not found' % name
-            raise click.ClickException(message)
-        elif len(plugins) > 1:
-            message = 'Entry point "%s" found in multiple packages:' % name
-            for plugin in plugins:
-                message += '\n - %s' % plugin.dist
-            raise click.ClickException(message)
-        return plugins[0].load()
-
-    def format_help_text(self, ctx, formatter):
-        formatter.write_paragraph()
-        formatter.write_text(textwrap.indent(textwrap.dedent('''
-            Master command loading sub-commands from plugins.
-        '''), '  '))
-        formatter.write_paragraph()
-        formatter.write_text(textwrap.indent(textwrap.dedent('''
-            You can use the following in your packages setup.py to
-            register a sub-command called `mysub':
-        '''), '  '))
-        formatter.write(textwrap.indent(textwrap.dedent('''
-            entry_points={
-              'score.cli': [
-                'mysub = pythonpath.to.main.func:main',
-              ]
-            }
-        '''), '      '))
-
-
-main = PluginCommand()
 
 if __name__ == '__main__':
     main()

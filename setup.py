@@ -64,8 +64,7 @@ setup(
             'score = score.cli:main'
         ],
         'score.cli': [
-            'autocomplete = score.cli.autocomplete:main',
-            'config = score.cli.config:main',
+            'conf = score.cli.cli:main',
         ]
     },
 )
