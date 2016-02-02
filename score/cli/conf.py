@@ -46,10 +46,12 @@ def confroot():
     return os.path.join(root, '.score')
 
 
-def addconf(name, path):
+def addconf(name, path, *, root=None):
     assert re.match(r'^[a-zA-Z0-9_-]+$', name)
     assert not name.startswith('__')
-    root = os.path.join(confroot(), 'conf')
+    if root is None:
+        root = confroot()
+    root = os.path.join(root, 'conf')
     os.makedirs(root, exist_ok=True)
     file = os.path.join(root, name)
     open(file, 'w').write('[score.init]\n'
@@ -64,8 +66,10 @@ def delconf(name):
         pass
 
 
-def setdefault(name):
-    file = os.path.join(confroot(), 'conf', name)
+def setdefault(name, root=None):
+    if root is None:
+        root = confroot()
+    file = os.path.join(root, 'conf', name)
     if not os.path.exists(file):
         raise FileNotFoundError(file)
     open(_default(), 'w').write('[score.init]\n'
