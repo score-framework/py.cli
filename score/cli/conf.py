@@ -35,7 +35,7 @@ def venv_root():
     if hasattr(sys, 'real_prefix'):
         return sys.prefix
     if hasattr(sys, 'base_prefix') and sys.base_prefix is not sys.prefix:
-        return sys.base_prefix
+        return sys.prefix
     return None
 
 
