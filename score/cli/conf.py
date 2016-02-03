@@ -39,10 +39,13 @@ def venv_root():
     return None
 
 
-def confroot():
-    root = venv_root()
-    if not root:
+def confroot(global_=False):
+    if global_:
         root = os.getenv('HOME') or os.getenv('HOMEPATH')
+    else:
+        root = venv_root()
+        if not root:
+            root = os.getenv('HOME') or os.getenv('HOMEPATH')
     return os.path.join(root, '.score')
 
 
