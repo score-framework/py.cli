@@ -29,12 +29,13 @@ import sys
 import re
 from score.init import parse_config_file as parse
 from collections import OrderedDict
+import textwrap
 
 
 def venv_root():
     if hasattr(sys, 'real_prefix'):
         return sys.prefix
-    if hasattr(sys, 'base_prefix') and sys.base_prefix is not sys.prefix:
+    if hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix:
         return sys.prefix
     return None
 
@@ -57,8 +58,12 @@ def addconf(name, path, *, root=None):
     root = os.path.join(root, 'conf')
     os.makedirs(root, exist_ok=True)
     file = os.path.join(root, name)
-    open(file, 'w').write('[score.init]\n'
-                          'based_on = %s\n' % path)
+    open(file, 'w').write(textwrap.dedent('''
+        [score.init]
+        based_on =
+            %s
+            %s
+        ''' % (defaultconf(global_=True), path)))
 
 
 def delconf(name):
@@ -75,13 +80,17 @@ def setdefault(name, root=None):
     file = os.path.join(root, 'conf', name)
     if not os.path.exists(file):
         raise FileNotFoundError(file)
-    open(_default(), 'w').write('[score.init]\n'
-                                'based_on = ${here}/%s\n' % name)
+    open(defaultconf(), 'w').write(textwrap.dedent('''
+        [score.init]
+        based_on =
+            %s
+            ${here}/%s
+    ''' % (globalconf(), name)).strip())
 
 
 def getdefault():
     try:
-        return os.path.basename(get_origin(_default()))
+        return os.path.basename(get_origin(defaultconf()))
     except FileNotFoundError:
         return None
 
@@ -117,8 +126,15 @@ def listconf():
 
 def get_origin(file):
     parsedconf = parse(file, recurse=False)
-    return parsedconf['score.init']['based_on']
+    base = parsedconf['score.init']['based_on']
+    if '\n' in base:
+        base = base.split('\n')[-1]
+    return base
 
 
-def _default():
-    return os.path.join(confroot(), 'conf', '__default__')
+def globalconf():
+    return os.path.join(confroot(global_=True), 'conf', '__global__')
+
+
+def defaultconf(*, global_=False):
+    return os.path.join(confroot(global_=global_), 'conf', '__default__')
