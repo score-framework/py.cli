@@ -26,8 +26,8 @@
 
 import click
 from pkg_resources import iter_entry_points
-from .conf import _default
-from score.init import init_from_file
+from .conf import defaultconf
+from score.init import init_from_file, parse_config_file
 import logging
 
 
@@ -59,14 +59,17 @@ class ScoreCLI(click.MultiCommand):
 class Configuration:
 
     def __init__(self, path):
-        self._path = path
+        self.given_path = path
         self._conf = None
 
     @property
     def path(self):
-        if self._path is not None:
-            return self._path
-        return _default()
+        if self.given_path is not None:
+            return self.given_path
+        return defaultconf()
+
+    def parse(self):
+        return parse_config_file(self.path)
 
     def load(self, module=None):
         if self._conf is None:
