@@ -49,8 +49,8 @@ class ShellUpdateMixin:
         if not is_virtualenv:
             # we are outside a virtual environment
             if self.install_dir.startswith(os.path.expanduser('~')):
-                # we are install into the current user's folder
-                self._update_bashrc()
+                # we are installing into the current user's folder
+                self._update_bashrc() or self._update_bash_profile()
                 self._update_zshrc()
         return result
 
@@ -81,7 +81,16 @@ class ShellUpdateMixin:
               export PS1="\[[0;33m\](${VIRTUAL_ENV##*/})\[[0m\] $PS1"
             fi
         ''').strip()
-        self._update_rc_file(os.path.expanduser('~/.bashrc'), prompt)
+        return self._update_rc_file(os.path.expanduser('~/.bashrc'), prompt)
+
+    def _update_bash_profile(self):
+        prompt = textwrap.dedent(r'''
+            if [ -n "$VIRTUAL_ENV" ]; then
+              export PS1="\[[0;33m\](${VIRTUAL_ENV##*/})\[[0m\] $PS1"
+            fi
+        ''').strip()
+        return self._update_rc_file(os.path.expanduser('~/.bash_profile'),
+                                    prompt)
 
     def _update_zshrc(self):
         prompt = textwrap.dedent(r'''
@@ -89,21 +98,21 @@ class ShellUpdateMixin:
               export PROMPT="%{[0;33m%}(${VIRTUAL_ENV##*/})%{[0m%} $PROMPT"
             fi
         ''').strip()
-        self._update_rc_file(os.path.expanduser('~/.zshrc'), prompt)
+        return self._update_rc_file(os.path.expanduser('~/.zshrc'), prompt)
 
     def _update_rc_file(self, rcfile, prompt):
         try:
             content = open(rcfile).read()
         except FileNotFoundError:
-            return
+            return False
         binfolder = self._bin_folder()
         if not binfolder:
             # probably windows, wouldn't even know how to modify the PATH
-            return
+            return False
         # skip the update, if there is a line adding the binfolder to the path
         path_regex = r'\s*PATH=(.+:)?' + re.escape(binfolder)
         if re.search(path_regex, content):
-            return
+            return False
         code = '\n'
         if content[-1] != '\n':
             code += '\n'
@@ -122,6 +131,7 @@ class ShellUpdateMixin:
         ''' % binfolder).lstrip(), '  ')
         code += '  ' + prompt + '\n'
         open(rcfile, 'a').write(code)
+        return True
 
     def _bin_folder(self):
         if sys.platform == 'darwin':
