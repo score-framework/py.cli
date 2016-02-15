@@ -48,8 +48,8 @@ class ShellUpdateMixin:
                 hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix))
         if not is_virtualenv:
             # we are outside a virtual environment
-            if self.install_dir.startswith(os.path.expanduser('~')):
-                # we are installing into the current user's folder
+            if self.user:
+                # we are performing a --user install
                 self._update_bashrc() or self._update_bash_profile()
                 self._update_zshrc()
         return result
