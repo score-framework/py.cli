@@ -48,10 +48,10 @@ class ShellUpdateMixin:
                 hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix))
         if not is_virtualenv:
             # we are outside a virtual environment
-            if self.user:
-                # we are performing a --user install
-                self._update_bashrc() or self._update_bash_profile()
-                self._update_zshrc()
+            # FIXME: we should be checking, if this is a --user installation,
+            # but we have not found a reliable, cross-platform way of doing that
+            self._update_bashrc() or self._update_bash_profile()
+            self._update_zshrc()
         return result
 
     def _install_global_conf(self, file):
