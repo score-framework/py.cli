@@ -137,9 +137,12 @@ class ShellUpdateMixin:
         if sys.platform == 'darwin':
             # mac os x
             return os.path.expanduser(
-                '~/Library/Python/%d.%d/bin' % sys.version_info)
+                '~/Library/Python/%d.%d/bin' % (sys.version_info.major,
+                                                sys.version_info.minor))
         elif sys.platform in ('linux', 'freebsd', 'cygwin'):
             return os.path.expanduser('~/.local/bin')
+        else:
+            return None
 
 
 class InstallCommand(ShellUpdateMixin, install):
