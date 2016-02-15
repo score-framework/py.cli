@@ -37,14 +37,18 @@ class ShellUpdateMixin:
 
     def run(self):
         result = super().run()
-        import score.cli.conf as conf
-        globalconf = conf.globalconf()
-        defaultconf = conf.defaultconf(global_=True)
+        home = os.getenv('HOME') or os.getenv('HOMEPATH')
+        confroot = os.path.join(home, '.score')
+        globalconf = os.path.join(confroot, 'conf', '__global__')
+        defaultconf = os.path.join(confroot, 'conf', '__default__')
         self._install_global_conf(globalconf)
         self._install_default_conf(defaultconf, globalconf)
-        if not conf.venv_root():
+        is_virtualenv = (
+            hasattr(sys, 'real_prefix') or (
+                hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix))
+        if not is_virtualenv:
             # we are outside a virtual environment
-            if self.install_dir.startswith(os.expanduser('~')):
+            if self.install_dir.startswith(os.path.expanduser('~')):
                 # we are install into the current user's folder
                 self._update_bashrc()
                 self._update_zshrc()
