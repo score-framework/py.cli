@@ -129,7 +129,7 @@ class ShellUpdateMixin:
             # The next line updates your shell prompt to include the name of
             # the current project.
         ''' % binfolder).lstrip(), '  ')
-        code += '  ' + prompt + '\n'
+        code += textwrap.indent(prompt, '  ') + '\n'
         open(rcfile, 'a').write(code)
         return True
 
