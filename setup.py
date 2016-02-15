@@ -44,8 +44,10 @@ class ShellUpdateMixin:
         self._install_default_conf(defaultconf, globalconf)
         if not conf.venv_root():
             # we are outside a virtual environment
-            self._update_bashrc()
-            self._update_zshrc()
+            if self.install_dir.startswith(os.expanduser('~')):
+                # we are install into the current user's folder
+                self._update_bashrc()
+                self._update_zshrc()
         return result
 
     def _install_global_conf(self, file):
