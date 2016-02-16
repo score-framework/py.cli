@@ -133,8 +133,27 @@ def get_origin(file):
 
 
 def globalconf():
-    return os.path.join(confroot(global_=True), 'conf', '__global__')
+    file = os.path.join(confroot(global_=True), 'conf', '__global__')
+    os.makedirs(os.path.dirname(file), exist_ok=True)
+    try:
+        open(file, 'x').write(textwrap.dedent('''
+            # This is the global CLI configuration file for your SCORE
+            # installation. The values defined here will be available in
+            # *all* your command line applications.
+        ''').strip())
+    except FileExistsError:
+        pass
+    return file
 
 
 def defaultconf(*, global_=False):
-    return os.path.join(confroot(global_=global_), 'conf', '__default__')
+    file = os.path.join(confroot(global_=global_), 'conf', '__default__')
+    os.makedirs(os.path.dirname(file), exist_ok=True)
+    try:
+        open(file, 'x').write(textwrap.dedent('''
+            [score.init]
+            based_on = %s
+        ''' % globalconf()).strip())
+    except FileExistsError:
+        pass
+    return file

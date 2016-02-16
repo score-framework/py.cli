@@ -37,12 +37,6 @@ class ShellUpdateMixin:
 
     def run(self):
         result = super().run()
-        home = os.getenv('HOME') or os.getenv('HOMEPATH')
-        confroot = os.path.join(home, '.score')
-        globalconf = os.path.join(confroot, 'conf', '__global__')
-        defaultconf = os.path.join(confroot, 'conf', '__default__')
-        self._install_global_conf(globalconf)
-        self._install_default_conf(defaultconf, globalconf)
         is_virtualenv = (
             hasattr(sys, 'real_prefix') or (
                 hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix))
@@ -50,30 +44,10 @@ class ShellUpdateMixin:
             # we are outside a virtual environment
             # FIXME: we should be checking, if this is a --user installation,
             # but we have not found a reliable, cross-platform way of doing that
+            # TODO: maybe we should create a bashrc, if there is none?
             self._update_bashrc() or self._update_bash_profile()
             self._update_zshrc()
         return result
-
-    def _install_global_conf(self, file):
-        try:
-            os.makedirs(os.path.dirname(file), exist_ok=True)
-            open(file, 'x').write(textwrap.dedent('''
-                # This is the global CLI configuration file for your SCORE
-                # installation. The values defined here will be available in
-                # *all* your command line applications.
-            ''').strip())
-        except FileExistsError:
-            pass
-
-    def _install_default_conf(self, file, globalconf):
-        try:
-            os.makedirs(os.path.dirname(file), exist_ok=True)
-            open(file, 'x').write(textwrap.dedent('''
-                [score.init]
-                based_on = %s
-            ''' % globalconf).strip())
-        except FileExistsError:
-            pass
 
     def _update_bashrc(self):
         prompt = textwrap.dedent(r'''
