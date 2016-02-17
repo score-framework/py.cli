@@ -88,7 +88,7 @@ def setdefault(name, *, venv=None):
         based_on =
             %s
             ${here}/%s
-    ''' % (globalconf(), name)).strip())
+    ''' % (globalconf(), name)).lstrip())
 
 
 def getdefault(*, venv=None):
@@ -144,7 +144,7 @@ def globalconf():
             # This is the global CLI configuration file for your SCORE
             # installation. The values defined here will be available in
             # *all* your command line applications.
-        ''').strip())
+        ''').lstrip())
     except FileExistsError:
         pass
     return file
@@ -158,7 +158,7 @@ def defaultconf(*, global_=False, venv=None):
         open(file, 'x').write(textwrap.dedent('''
             [score.init]
             based_on = %s
-        ''' % globalconf()).strip())
+        ''' % globalconf()).lstrip())
     except FileExistsError:
         pass
     return file
