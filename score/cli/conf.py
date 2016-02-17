@@ -83,7 +83,7 @@ def setdefault(name, *, venv=None):
     file = os.path.join(root, 'conf', name)
     if not os.path.exists(file):
         raise FileNotFoundError(file)
-    open(defaultconf(), 'w').write(textwrap.dedent('''
+    open(defaultconf(venv=venv), 'w').write(textwrap.dedent('''
         [score.init]
         based_on =
             %s
