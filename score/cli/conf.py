@@ -32,7 +32,9 @@ from collections import OrderedDict
 import textwrap
 
 
-def venv_root():
+def venv_root(venv=None):
+    if venv is not None:
+        return venv
     if hasattr(sys, 'real_prefix'):
         return sys.prefix
     if hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix:
@@ -40,21 +42,23 @@ def venv_root():
     return None
 
 
-def confroot(global_=False):
+def confroot(*, global_=False, venv=None):
     if global_:
+        if venv is not None:
+            raise ValueError('Parameters *global_* and *venv* are mutually '
+                             'exclusive')
         root = os.getenv('HOME') or os.getenv('HOMEPATH')
     else:
-        root = venv_root()
+        root = venv_root(venv)
         if not root:
             root = os.getenv('HOME') or os.getenv('HOMEPATH')
     return os.path.join(root, '.score')
 
 
-def addconf(name, path, *, root=None):
+def addconf(name, path, *, venv=None):
     assert re.match(r'^[a-zA-Z0-9_-]+$', name)
     assert not name.startswith('__')
-    if root is None:
-        root = confroot()
+    root = confroot(venv=venv)
     root = os.path.join(root, 'conf')
     os.makedirs(root, exist_ok=True)
     file = os.path.join(root, name)
@@ -66,17 +70,16 @@ def addconf(name, path, *, root=None):
         ''' % (defaultconf(global_=True), path)))
 
 
-def delconf(name):
-    file = os.path.join(confroot(), 'conf', name)
+def delconf(name, *, venv=None):
+    file = os.path.join(confroot(venv=venv), 'conf', name)
     try:
         os.unlink(file)
     except FileNotFoundError:
         pass
 
 
-def setdefault(name, root=None):
-    if root is None:
-        root = confroot()
+def setdefault(name, *, venv=None):
+    root = confroot(venv=venv)
     file = os.path.join(root, 'conf', name)
     if not os.path.exists(file):
         raise FileNotFoundError(file)
@@ -88,27 +91,28 @@ def setdefault(name, root=None):
     ''' % (globalconf(), name)).strip())
 
 
-def getdefault():
+def getdefault(*, venv=None):
     try:
-        return os.path.basename(get_origin(defaultconf()))
+        return os.path.basename(get_origin(defaultconf(venv=venv)))
     except FileNotFoundError:
         return None
 
 
-def getconf(name):
-    return listconf()[name]
+def getconf(name, *, venv=None):
+    return listconf(venv=venv)[name]
 
 
-def listconf():
+def listconf(*, include_global=True, venv=None):
     files = {}
-    folder = os.getenv('HOME') or os.getenv('HOMEPATH')
-    folder = os.path.join(folder, '.score', 'conf')
-    try:
-        for file in os.listdir(folder):
-            files[file] = os.path.join(folder, file)
-    except FileNotFoundError:
-        pass
-    folder = venv_root()
+    if include_global:
+        folder = os.getenv('HOME') or os.getenv('HOMEPATH')
+        folder = os.path.join(folder, '.score', 'conf')
+        try:
+            for file in os.listdir(folder):
+                files[file] = os.path.join(folder, file)
+        except FileNotFoundError:
+            pass
+    folder = venv_root(venv)
     if folder:
         folder = os.path.join(folder, '.score', 'conf')
         try:
@@ -146,8 +150,9 @@ def globalconf():
     return file
 
 
-def defaultconf(*, global_=False):
-    file = os.path.join(confroot(global_=global_), 'conf', '__default__')
+def defaultconf(*, global_=False, venv=None):
+    file = os.path.join(confroot(global_=global_, venv=venv),
+                        'conf', '__default__')
     os.makedirs(os.path.dirname(file), exist_ok=True)
     try:
         open(file, 'x').write(textwrap.dedent('''
