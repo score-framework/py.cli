@@ -50,31 +50,15 @@ class ShellUpdateMixin:
         return result
 
     def _update_bashrc(self):
-        prompt = textwrap.dedent(r'''
-            if [ -n "$VIRTUAL_ENV" ]; then
-              export PS1="\[[0;33m\](${VIRTUAL_ENV##*/})\[[0m\] $PS1"
-            fi
-        ''').strip()
-        return self._update_rc_file(os.path.expanduser('~/.bashrc'), prompt)
+        return self._update_rc_file(os.path.expanduser('~/.bashrc'))
 
     def _update_bash_profile(self):
-        prompt = textwrap.dedent(r'''
-            if [ -n "$VIRTUAL_ENV" ]; then
-              export PS1="\[[0;33m\](${VIRTUAL_ENV##*/})\[[0m\] $PS1"
-            fi
-        ''').strip()
-        return self._update_rc_file(os.path.expanduser('~/.bash_profile'),
-                                    prompt)
+        return self._update_rc_file(os.path.expanduser('~/.bash_profile'))
 
     def _update_zshrc(self):
-        prompt = textwrap.dedent(r'''
-            if [ -n "$VIRTUAL_ENV" ]; then
-              export PROMPT="%{[0;33m%}(${VIRTUAL_ENV##*/})%{[0m%} $PROMPT"
-            fi
-        ''').strip()
-        return self._update_rc_file(os.path.expanduser('~/.zshrc'), prompt)
+        return self._update_rc_file(os.path.expanduser('~/.zshrc'))
 
-    def _update_rc_file(self, rcfile, prompt):
+    def _update_rc_file(self, rcfile):
         try:
             content = open(rcfile).read()
         except FileNotFoundError:
@@ -91,19 +75,13 @@ class ShellUpdateMixin:
         if content[-1] != '\n':
             code += '\n'
         code += textwrap.dedent(r'''
-            # The next two blocks were inserted by the `projects' module of
+            # The next block was inserted by the `cli' module of
             # The SCORE Framework (http://score-framework.org)
 
-        ''').lstrip()
-        code += textwrap.indent(textwrap.dedent(r'''
-            # The following line makes sure that you can access the `score'
-            # application in your shell:
-            PATH=$PATH:%s
-
-            # The next line updates your shell prompt to include the name of
-            # the current project.
-        ''' % binfolder).lstrip(), '  ')
-        code += textwrap.indent(prompt, '  ') + '\n'
+              # The following line makes sure that you can access the `score'
+              # application in your shell:
+              PATH=$PATH:%s
+        ''' % binfolder).lstrip()
         open(rcfile, 'a').write(code)
         return True
 
