@@ -81,17 +81,10 @@ class Configuration:
 
 @click.command(cls=ScoreCLI)
 @click.option('-c', '--conf', 'conf',
-              type=click.Path(file_okay=True, dir_okay=False))
-@click.option('-d', '--debug', 'debug', is_flag=True, default=False)
-@click.option('-q', '--quiet', 'quiet', is_flag=True, default=False)
+              type=click.Path(file_okay=True, dir_okay=False),
+              help='The configuration to use.')
 @click.pass_context
-def main(ctx, conf=None, debug=False, quiet=False):
-    if debug:
-        logging.basicConfig(level=logging.DEBUG)
-    elif quiet:
-        logging.basicConfig(level=logging.WARN)
-    else:
-        logging.basicConfig(level=logging.INFO)
+def main(ctx, conf=None):
     logger = logging.getLogger()
     ctx.obj = {
         'conf': Configuration(conf),
