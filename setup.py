@@ -29,6 +29,7 @@ import re
 from setuptools import setup
 from setuptools.command.install import install
 from setuptools.command.develop import develop
+import site
 import sys
 import textwrap
 
@@ -42,11 +43,18 @@ class ShellUpdateMixin:
                 hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix))
         if not is_virtualenv:
             # we are outside a virtual environment
-            # FIXME: we should be checking, if this is a --user installation,
-            # but we have not found a reliable, cross-platform way of doing that
-            # TODO: maybe we should create a bashrc, if there is none?
-            self._update_bashrc() or self._update_bash_profile()
-            self._update_zshrc()
+            if sys.platform != 'win32':
+                # FIXME: we should be checking, if this is a --user
+                # installation, but we have not found a reliable, cross-platform
+                # way of doing that
+                # TODO: maybe we should create a bashrc, if there is none?
+                self._update_bashrc() or self._update_bash_profile()
+                self._update_zshrc()
+            else:
+                # TODO: some resources for achieving the above on windows:
+                # http://stackoverflow.com/questions/2121795/programmatically-modifiy-environment-variables
+                # https://docs.python.org/3/library/winreg.html
+                pass
         return result
 
     def _update_bashrc(self):
@@ -63,10 +71,8 @@ class ShellUpdateMixin:
             content = open(rcfile).read()
         except FileNotFoundError:
             return False
-        binfolder = self._bin_folder()
-        if not binfolder:
-            # probably windows, wouldn't even know how to modify the PATH
-            return False
+        # https://docs.python.org/3/install/index.html#alternate-installation-the-user-scheme
+        binfolder = os.path.join(site.getuserbase(), 'bin')
         # skip the update, if there is a line adding the binfolder to the path
         path_regex = r'\s*PATH=(.+:)?' + re.escape(binfolder)
         if re.search(path_regex, content):
@@ -84,17 +90,6 @@ class ShellUpdateMixin:
         ''' % binfolder).lstrip()
         open(rcfile, 'a').write(code)
         return True
-
-    def _bin_folder(self):
-        if sys.platform == 'darwin':
-            # mac os x
-            return os.path.expanduser(
-                '~/Library/Python/%d.%d/bin' % (sys.version_info.major,
-                                                sys.version_info.minor))
-        elif sys.platform in ('linux', 'freebsd', 'cygwin'):
-            return os.path.expanduser('~/.local/bin')
-        else:
-            return None
 
 
 class InstallCommand(ShellUpdateMixin, install):
