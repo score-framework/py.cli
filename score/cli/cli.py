@@ -74,6 +74,7 @@ def conf_add(file, name=None, make_default=False):
     file = os.path.abspath(file)
     if name is None:
         name = name_from_file(file)
+    make_default = make_default or listconf()
     addconf(name, file)
     if make_default:
         setdefault(name)
