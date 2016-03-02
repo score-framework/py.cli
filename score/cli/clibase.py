@@ -26,7 +26,7 @@
 
 import click
 from pkg_resources import iter_entry_points
-from .conf import defaultconf, getconf
+from .conf import default_file, get_file
 from score.init import init_from_file, parse_config_file
 import logging
 import os
@@ -67,7 +67,7 @@ class Configuration:
     def path(self):
         if self.given_path is not None:
             return self.given_path
-        return defaultconf()
+        return default_file()
 
     def parse(self):
         return parse_config_file(self.path)
@@ -85,7 +85,7 @@ class Configuration:
 @click.pass_context
 def main(ctx, conf=None):
     if conf and not os.path.isfile(conf):
-        conf = getconf(conf)
+        conf = get_file(conf)
     logger = logging.getLogger()
     ctx.obj = {
         'conf': Configuration(conf),

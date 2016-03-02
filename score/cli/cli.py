@@ -26,13 +26,18 @@
 
 import click
 from .conf import (
-    listconf, addconf, delconf, getconf, getdefault, setdefault, get_origin)
+    name2file, add, remove, get_file, default_file, make_default, get_origin)
 import os
 import re
 from score.init import parse_config_file as parse
 
 
 def name_from_file(file):
+    """
+    Returns the filename of a path, deprived of its file extension::
+
+        a/b/c.d -> c
+    """
     return re.sub(r'\..*', '', os.path.basename(file))
 
 
@@ -50,11 +55,11 @@ def conf_list(paths):
     """
     Lists available configurations.
     """
-    default = getdefault()
+    default = default_file()
     tpl = '{name} {default}'
     if paths:
         tpl += ' ({path})'
-    for conf, path in listconf().items():
+    for conf, path in name2file().items():
         print(tpl.format(
             name=conf,
             default='*' if conf == default else ' ',
@@ -74,19 +79,19 @@ def conf_add(file, name=None, make_default=False):
     file = os.path.abspath(file)
     if name is None:
         name = name_from_file(file)
-    make_default = make_default or listconf()
-    addconf(name, file)
+    make_default = make_default or name2file()
+    add(name, file)
     if make_default:
-        setdefault(name)
+        make_default(name)
 
 
 @main.command('setdefault')
 @click.argument('name')
-def conf_setdefault(name):
+def setdefault(name):
     """
     Adds a new configuration.
     """
-    setdefault(name)
+    make_default(name)
 
 
 CONFIRM_DELETE = 'Delete default configuration `%s\'?'
@@ -101,20 +106,20 @@ CONFIRM_DELETE_WRONG_PATH = \
 @main.command('remove')
 @click.argument('name')
 @click.pass_context
-def remove(clickctx, name):
+def remove_(clickctx, name):
     """
     Removes a configuration.
     """
     if re.match('^[a-zA-Z0-9_-]+$', name):
-        if name == getdefault():
+        if name == default_file():
             click.confirm(CONFIRM_DELETE % name, abort=True)
-        delconf(name)
+        remove(name)
         return
     # assume *name* is actually the path to a file
     file = name
     file = os.path.realpath(file)
     name = name_from_file(file)
-    conf = getconf(name)
+    conf = get_file(name)
     try:
         parsedconf = parse(conf, recurse=False)
     except FileNotFoundError:
@@ -127,7 +132,7 @@ def remove(clickctx, name):
                 real=configured,
                 provided=file,
             ), abort=True)
-    delconf(name)
+    remove(name)
 
 
 if __name__ == '__main__':
