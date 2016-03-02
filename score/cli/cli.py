@@ -88,7 +88,7 @@ def conf_setdefault(name):
     setdefault(name)
 
 
-CONFIRM_DELETE = 'Delete configuration `%s\'?'
+CONFIRM_DELETE = 'Delete default configuration `%s\'?'
 CONFIRM_DELETE_WRONG_PATH = \
     'WARNING: Path mismatch!\n' \
     ' Configured file: {real}\n' \
@@ -97,27 +97,23 @@ CONFIRM_DELETE_WRONG_PATH = \
     'Proceed anyway and delete configuration `{name}\'? '
 
 
-@main.command('del')
+@main.command('remove')
 @click.argument('name')
-@click.option('-f', '--force', 'force', is_flag=True, default=False)
 @click.pass_context
-def conf_del(clickctx, name, force):
+def remove(clickctx, name):
     """
-    Deletes a configuration.
+    Removes a configuration.
     """
     if re.match('^[a-zA-Z0-9_-]+$', name):
-        if name == getdefault() and not force:
-            raise click.ClickException(
-                'Pass --force to delete default configuration')
-        if force or click.confirm(CONFIRM_DELETE % name):
-            delconf(name)
+        if name == getdefault():
+            click.confirm(CONFIRM_DELETE % name, abort=True)
+        delconf(name)
         return
     # assume *name* is actually the path to a file
     file = name
     file = os.path.realpath(file)
     name = name_from_file(file)
     conf = getconf(name)
-    confirmed = False
     try:
         parsedconf = parse(conf, recurse=False)
     except FileNotFoundError:
@@ -125,17 +121,12 @@ def conf_del(clickctx, name, force):
     else:
         configured = parsedconf['score.init']['based_on']
         if file != configured:
-            msg = CONFIRM_DELETE_WRONG_PATH.format(
+            click.confirm(CONFIRM_DELETE_WRONG_PATH.format(
                 name=name,
                 real=configured,
                 provided=file,
-            )
-            if click.confirm(msg):
-                confirmed = True
-            else:
-                return
-    if force or (not confirmed and click.confirm(CONFIRM_DELETE % name)):
-        delconf(name)
+            ), abort=True)
+    delconf(name)
 
 
 if __name__ == '__main__':
