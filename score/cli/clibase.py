@@ -26,9 +26,10 @@
 
 import click
 from pkg_resources import iter_entry_points
-from .conf import defaultconf
+from .conf import defaultconf, getconf
 from score.init import init_from_file, parse_config_file
 import logging
+import os
 
 
 class ScoreCLI(click.MultiCommand):
@@ -80,11 +81,11 @@ class Configuration:
 
 
 @click.command(cls=ScoreCLI)
-@click.option('-c', '--conf', 'conf',
-              type=click.Path(file_okay=True, dir_okay=False),
-              help='The configuration to use.')
+@click.option('-c', '--conf', 'conf', help='The configuration to use.')
 @click.pass_context
 def main(ctx, conf=None):
+    if conf and not os.path.isfile(conf):
+        conf = getconf(conf)
     logger = logging.getLogger()
     ctx.obj = {
         'conf': Configuration(conf),
