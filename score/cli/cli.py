@@ -26,7 +26,7 @@
 
 import click
 from .conf import (
-    name2file, add, remove, get_file, default_file, make_default, get_origin)
+    name2file, add, remove, get_file, get_default, make_default, get_origin)
 import os
 import re
 from score.init import parse_config_file as parse
@@ -55,7 +55,7 @@ def conf_list(paths):
     """
     Lists available configurations.
     """
-    default = default_file()
+    default = get_default()
     tpl = '{name} {default}'
     if paths:
         tpl += ' ({path})'
@@ -70,18 +70,18 @@ def conf_list(paths):
 @main.command('add')
 @click.argument('file')
 @click.option('-n', '--name', 'name')
-@click.option('-d', '--make-default', 'make_default',
+@click.option('-d', '--make-default', 'make_default_',
               is_flag=True, default=False)
-def conf_add(file, name=None, make_default=False):
+def conf_add(file, name=None, make_default_=False):
     """
     Adds a new configuration.
     """
     file = os.path.abspath(file)
     if name is None:
         name = name_from_file(file)
-    make_default = make_default or name2file()
+    make_default_ = make_default_ or name2file()
     add(name, file)
-    if make_default:
+    if make_default_:
         make_default(name)
 
 
