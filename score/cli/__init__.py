@@ -25,9 +25,10 @@
 # Licensee has his registered seat, an establishment or assets.
 
 from .clibase import ScoreCLI, main
+from ._setup import setup
 
 
-__all__ = ('ScoreCLI', 'main')
+__all__ = ('ScoreCLI', 'main', 'setup')
 
 
 if __name__ == '__main__':
