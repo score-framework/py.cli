@@ -3,6 +3,7 @@ from pkg_resources import iter_entry_points
 import re
 import site
 import sys
+import shutil
 import textwrap
 
 
@@ -11,54 +12,68 @@ def setup():
         entrypoint.load()()
 
 
-def update_path():
-    if sys.platform != 'win32':
-        # TODO: maybe we should create a bashrc, if there is none?
-        _update_bashrc() or _update_bash_profile()
-        _update_zshrc()
-    else:
-        # TODO: some resources for achieving the above on windows:
-        # http://stackoverflow.com/questions/2121795/programmatically-modifiy-environment-variables
-        # https://docs.python.org/3/library/winreg.html
-        pass
+def append_to_bashrc(module, test_exists, gen_content):
+    rcfile = bashrc = os.path.expanduser('~/.bashrc')
+    bash_profile = os.path.expanduser('~/.bash_profile')
+    if not os.path.exists(bashrc):
+        if os.path.exists(bash_profile):
+            rcfile = bash_profile
+        else:
+            open(bashrc, 'w')
+    return append_to_rcfile(module, rcfile, test_exists, gen_content)
 
 
-def _update_bashrc():
-    return _update_rc_file(os.path.expanduser('~/.bashrc'))
+def append_to_zshrc(module, test_exists, gen_content):
+    rcfile = os.path.expanduser('~/.zshrc')
+    return append_to_rcfile(module, rcfile, test_exists, gen_content)
 
 
-def _update_bash_profile():
-    return _update_rc_file(os.path.expanduser('~/.bash_profile'))
-
-
-def _update_zshrc():
-    return _update_rc_file(os.path.expanduser('~/.zshrc'))
-
-
-def _update_rc_file(rcfile):
+def append_to_rcfile(module, rcfile, test_exists, gen_content):
     try:
         content = open(rcfile).read()
     except FileNotFoundError:
         return False
-    # https://docs.python.org/3/install/index.html#alternate-installation-the-user-scheme
-    binfolder = os.path.join(site.getuserbase(), 'bin')
-    # skip the update, if there is a line adding the binfolder to the path
-    path_regex = r'\s*PATH=(.+:)?' + re.escape(binfolder)
-    if re.search(path_regex, content):
+    if test_exists(rcfile, content):
         return False
     code = '\n'
-    if content[-1] != '\n':
+    if content and content[-1] != '\n':
         code += '\n'
     code += textwrap.dedent(r'''
-        # The next block was inserted by the `cli' module of
+        # The next block was inserted by the `%s' module of
         # The SCORE Framework (http://score-framework.org)
+    ''' % module).lstrip()
+    code += '\n'
+    code += textwrap.indent(gen_content(), '  ').rstrip()
+    code += '\n'
+    bak = '%s.score-%s.bak' % (rcfile, module)
+    shutil.copy2(rcfile, bak)
+    open(rcfile, 'a').write(code)
+    return True
 
+
+def update_path():
+    if sys.platform == 'win32':
+        # TODO: some resources for achieving the above on windows:
+        # http://stackoverflow.com/questions/2121795/programmatically-modifiy-environment-variables
+        # https://docs.python.org/3/library/winreg.html
+        return
+
+    # https://docs.python.org/3/install/index.html#alternate-installation-the-user-scheme
+    binfolder = os.path.join(site.getuserbase(), 'bin')
+
+    def test_exists(rcfile, content):
+        path_regex = r'\s*PATH=(.+:)?' + re.escape(binfolder)
+        return re.search(path_regex, content)
+
+    def gen_content():
+        return textwrap.dedent(r'''
             # The following line makes sure that you can access the `score'
             # application in your shell:
             PATH=$PATH:%s
-    ''' % binfolder).lstrip()
-    open(rcfile, 'a').write(code)
-    return True
+        ''' % binfolder).lstrip()
+
+    append_to_bashrc('cli', test_exists, gen_content)
+    append_to_zshrc('cli', test_exists, gen_content)
 
 
 if __name__ == '__main__':
