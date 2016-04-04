@@ -53,7 +53,7 @@ def append_to_rcfile(module, rcfile, test_exists, gen_content):
 
 def update_path():
     if sys.platform == 'win32':
-        # TODO: some resources for achieving the above on windows:
+        # TODO: some resources for updating the PATH on windows:
         # http://stackoverflow.com/questions/2121795/programmatically-modifiy-environment-variables
         # https://docs.python.org/3/library/winreg.html
         return
