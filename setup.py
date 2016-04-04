@@ -69,7 +69,7 @@ setup(
             'conf = score.cli.cli:main',
         ],
         'score.cli.setup': [
-            'update_path = score.cli._setup:update_path',
+            'update_path = score.cli.setup:update_path',
         ],
     },
 )
