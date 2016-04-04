@@ -111,7 +111,7 @@ def remove_(clickctx, name):
     Removes a configuration.
     """
     if re.match('^[a-zA-Z0-9_-]+$', name):
-        if name == default_file():
+        if name == get_default():
             click.confirm(CONFIRM_DELETE % name, abort=True)
         remove(name)
         return
