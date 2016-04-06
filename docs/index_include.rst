@@ -1,24 +1,82 @@
 .. module:: score.cli
-.. role:: faint
+.. role:: default
 .. role:: confkey
 
 *********
 score.cli
 *********
 
-Introduction
-============
-
 This module provides features for conveniently developing command line
-interfaces to other modules. It makes use of the excellent click_ library and
-currently provides two separate features for supporting CLI development:
-command aggregation and configuration management.
+interfaces to other modules. It makes use of the excellent click_ library.
 
 .. _click: http://click.pocoo.org
 
 
+.. _cli_quickstart:
+
+Quickstart
+==========
+
+.. note::
+
+    The :ref:`tutorial <tutorial>` provides a more elaborate introduction to
+    this module, so check it out if you haven't already.
+
+This example will create a function for listing all initialized modules. We
+want it to ba callable as `score modules`.
+
+First, you need a function that handles the logic. We will assume, the next
+function is in the python module `beekeeper`:
+
+.. code-block:: python
+
+    from random import randint
+
+    @click.group
+    @click.pass_context
+    def main(clickctx):
+        """
+        Lists all configured modules
+        """
+        score = clickctx.obj['conf'].load()
+        for module in score._modules:
+            print(module)
+            if randint(1, 10) == 1:
+                print('shhhh!')
+
+
+The only other thing you need is an `entry point`_ declaration in your
+package's *setup.py*:
+
+.. code-block:: python
+
+    setup(
+        # ... some other stuff
+        entry_points={
+            'score.cli': [
+                'modules = beekeeper:main',
+            ],
+        },
+        # ... potentially more stuff
+    )
+
+.. _entry point: http://pythonhosted.org/setuptools/pkg_resources.html#entry-points
+
+
+.. _cli_configuration:
+
+Configuration
+=============
+
+This is one of the few modules, that have no initializer: It is just here for
+taking care of shell commands.
+
+
+Details
+=======
+
 CLI Command Aggregation
-=======================
+-----------------------
 
 This module allows exposing a command line interface and grants access to all
 such exposed interfaces via a command line application called ``score``. If a
@@ -52,7 +110,7 @@ package ``foo.cli``:
 .. _cli_configuration_management:
 
 Configuration Management
-========================
+------------------------
 
 Another feature provided by this module is easy management of configuration
 files for command line applications: we assume that you initialize score using
@@ -69,9 +127,6 @@ This command will give you a list of available configurations in your current
 environment. The asterisk indicates that *cheeseshop* is the default
 configuration, i.e. will be used implicitly, if you don't specify an alternate
 configuration explicitly.
-
-Managing Configurations
------------------------
 
 You can add further configurations to this list using the ``conf`` subcommand:
 Setting a value is as simple as calling the appropriate CLI command:
@@ -170,8 +225,8 @@ virtual environment:
 
 .. _score_cli_helpers:
 
-Helper functions
-================
+API
+===
 
 .. autofunction:: score.cli.conf.venv_root
 
