@@ -105,8 +105,7 @@ CONFIRM_DELETE_WRONG_PATH = \
 
 @main.command('remove')
 @click.argument('name')
-@click.pass_context
-def remove_(clickctx, name):
+def remove_(name):
     """
     Removes a configuration.
     """
