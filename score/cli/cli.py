@@ -134,5 +134,15 @@ def remove_(name):
     remove(name)
 
 
+@main.command('dump')
+@click.pass_context
+def dump(clickctx):
+    """
+    Prints the current configuration.
+    """
+    confdict = clickctx.obj['conf'].parse()
+    confdict.write(click.get_text_stream('stdout'))
+
+
 if __name__ == '__main__':
     main()
