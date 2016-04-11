@@ -13,13 +13,9 @@ def setup():
 
 
 def append_to_bashrc(module, test_exists, gen_content):
-    rcfile = bashrc = os.path.expanduser('~/.bashrc')
-    bash_profile = os.path.expanduser('~/.bash_profile')
-    if not os.path.exists(bashrc):
-        if os.path.exists(bash_profile):
-            rcfile = bash_profile
-        else:
-            open(bashrc, 'w')
+    rcfile = os.path.expanduser('~/.bashrc')
+    if not os.path.exists(rcfile):
+        open(rcfile, 'w')
     return append_to_rcfile(module, rcfile, test_exists, gen_content)
 
 
