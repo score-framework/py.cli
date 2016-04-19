@@ -58,7 +58,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
     ],
     install_requires=[
-        'click',
+        'click >= 5',
         'score.init',
     ],
     entry_points={
