@@ -12,10 +12,29 @@ def setup():
         entrypoint.load()()
 
 
+def _source_bashrc_in_bashprofile():
+    source_re = re.compile(
+        '(^|\s+)(\.|source)\s+(~/|(/\w+)+)?\.bashrc', re.MULTILINE)
+
+    def test_exists(rcfile, content):
+        return source_re.search(content)
+
+    def gen_content():
+        return textwrap.dedent(r'''
+            # This file is sourced by bash for login shells. The following line
+            # runs your .bashrc and is recommended by the bash info pages.
+            [[ -f ~/.bashrc ]] && . ~/.bashrc
+        ''').lstrip()
+
+    rcfile = os.path.expanduser('~/.bash_profile')
+    return append_to_rcfile('cli', rcfile, test_exists, gen_content)
+
+
 def append_to_bashrc(module, test_exists, gen_content):
     rcfile = os.path.expanduser('~/.bashrc')
     if not os.path.exists(rcfile):
         open(rcfile, 'w')
+        _source_bashrc_in_bashprofile()
     return append_to_rcfile(module, rcfile, test_exists, gen_content)
 
 
