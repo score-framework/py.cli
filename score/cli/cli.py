@@ -141,7 +141,18 @@ def dump(clickctx):
     Prints the current configuration.
     """
     confdict = clickctx.obj['conf'].parse()
-    confdict.write(click.get_text_stream('stdout'))
+    for section in confdict:
+        if section == 'DEFAULT':
+            continue
+        print('[%s]' % section)
+        for key in confdict[section]:
+            value = confdict[section][key]
+            if key in confdict['DEFAULT'] and confdict['DEFAULT'][key] == value:
+                continue
+            if '\n' in value and value[0] != '\n':
+                value = '\n' + value
+            print('%s = %s' % (key, value.replace('\n', '\n    ')))
+        print('')
 
 
 if __name__ == '__main__':
