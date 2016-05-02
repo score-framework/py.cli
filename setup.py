@@ -59,7 +59,7 @@ setup(
     ],
     install_requires=[
         'click >= 5',
-        'score.init ~= 0.3.9',
+        'score.init',
     ],
     entry_points={
         'console_scripts': [
