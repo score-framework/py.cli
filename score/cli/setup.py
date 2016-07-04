@@ -84,7 +84,7 @@ def update_path():
         return textwrap.dedent(r'''
             # The following line makes sure that you can access the `score'
             # application in your shell:
-            PATH=$PATH:%s
+            PATH=%s:$PATH
         ''' % binfolder).lstrip()
 
     append_to_bashrc('cli', test_exists, gen_content)
