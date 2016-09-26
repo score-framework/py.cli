@@ -30,6 +30,7 @@ from .setup import setup
 
 __all__ = ('ScoreCLI', 'main', 'setup')
 
+__version__ = '0.2.23'
 
 if __name__ == '__main__':
     main()
