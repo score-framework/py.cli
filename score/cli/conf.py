@@ -100,7 +100,7 @@ def add(name, path, *, venv=None):
         based_on =
             %s
             %s
-        ''' % (default_file(global_=True), path)))
+        ''' % (global_file(), path)))
 
 
 def remove(name, *, venv=None):
@@ -134,9 +134,8 @@ def make_default(name, *, venv=None):
     open(default_file(venv=venv), 'w').write(textwrap.dedent('''
         [score.init]
         based_on =
-            %s
             ${here}/%s
-    ''' % (global_file(), name)).lstrip())
+    ''' % name).lstrip())
 
 
 def get_file(name, *, venv=None):
