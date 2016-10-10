@@ -32,6 +32,12 @@ from collections import OrderedDict
 import textwrap
 
 
+class InvalidConfigurationNameException(ValueError):
+    """
+    Raised when a configuration is registered with a bogus name.
+    """
+
+
 def venv_root(venv=None):
     """
     Provides the root folder of the current virtual environment.
@@ -85,12 +91,17 @@ def add(name, path, *, venv=None):
     Adds a configuration with given *name*, pointing to the configuration file
     at *path*.
 
+    The name must not start with two underscores, must consist of alphanumeric
+    characters, underscores and hyphens and must not start with a number or a
+    hyphen. Will raise an InvalidConfigurationNameException violates these
+    constraints.
+
     Can also operate on a given virtual environment if the *venv* parameter is
     not `None`. The specifics of this behaviour is documented in
     :func:`.rootdir`.
     """
-    assert re.match(r'^[a-zA-Z0-9_-]+$', name)
-    assert not name.startswith('__')
+    if name.startswith('__') or not re.match('^[a-zA-Z_][a-zA-Z0-9_-]*$', name):
+        raise InvalidConfigurationNameException(name)
     root = rootdir(venv=venv)
     root = os.path.join(root, 'conf')
     os.makedirs(root, exist_ok=True)
