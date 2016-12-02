@@ -79,7 +79,7 @@ def conf_add(file, name=None, make_default_=False):
     file = os.path.abspath(file)
     if name is None:
         name = name_from_file(file)
-    make_default_ = make_default_ or name2file()
+    make_default_ = make_default_ or not name2file()
     add(name, file)
     if make_default_:
         make_default(name)
