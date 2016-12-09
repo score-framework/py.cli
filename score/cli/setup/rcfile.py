@@ -19,7 +19,7 @@ class RcfileModifier(Installer):
         return sys.platform != 'win32'
 
     def test_if_installed(self):
-        return self.snippet in self.read_file()
+        return self.snippet in self.read_file('')
 
     def install(self):
         content = self.read_file()
@@ -97,11 +97,11 @@ class RcfileModifier(Installer):
             # The SCORE Framework (http://score-framework.org)
         ''' % self.module_name
 
-    def read_file(self):
+    def read_file(self, default=None):
         try:
             return open(self.rcfile).read()
         except FileNotFoundError:
-            return None
+            return default
 
     @abc.abstractmethod
     def get_snippet(self):
@@ -128,7 +128,7 @@ class BashrcInitializer(RcfileModifier):
             '''
 
     def test_if_installed(self):
-        return self.source_re.search(self.read_file())
+        return self.source_re.search(self.read_file(''))
 
     def get_snippet(self):
         return r'''

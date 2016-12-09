@@ -53,7 +53,7 @@ class AddToBashrcPath(BashrcModifier):
 
     def test_if_installed(self):
         path_regex = r'\s*PATH=(.+:)?' + re.escape(self.binfolder)
-        return re.search(path_regex, self.read_file())
+        return re.search(path_regex, self.read_file(''))
 
     def get_short_description(self):
         return "Configure PATH to `score' in your ~/.bashrc"
