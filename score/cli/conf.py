@@ -56,6 +56,14 @@ def venv_root(venv=None):
         return sys.prefix
     if hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix:
         return sys.prefix
+    # check for local installation
+    home = os.getenv('HOME') or os.getenv('HOMEPATH')
+    if sys.prefix.startswith(home):
+        # the sys.prefix is inside the current user's home folder, so we're
+        # assuming that this is a local installation by the user.
+        # this scenario also includes python versions installed via conda, for
+        # example.
+        return sys.prefix
     return None
 
 
