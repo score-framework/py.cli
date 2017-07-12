@@ -1,3 +1,4 @@
+# vim: set fileencoding=UTF-8
 from pkg_resources import iter_entry_points
 from .ui import default as default_ui
 

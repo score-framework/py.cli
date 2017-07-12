@@ -1,3 +1,4 @@
+# vim: set fileencoding=UTF-8
 from .installer import Installer
 from .rcfile import RcfileModifier, BashrcModifier, ZshrcModifier
 from .path import AddToWindowsPath, AddToBashrcPath, AddToZshrcPath
