@@ -105,34 +105,38 @@ CONFIRM_DELETE_WRONG_PATH = \
 
 
 @main.command('rm')
-@click.argument('name')
+@click.argument('name', nargs=-1)
 def remove_(name):
     """
     Removes a configuration.
     """
-    if re.match('^[a-zA-Z0-9_-]+$', name):
-        if name == get_default():
-            click.confirm(CONFIRM_DELETE % name, abort=True)
+    names = name
+    for name in names:
+        if re.match('^[a-zA-Z0-9_-]+$', name):
+            if name == get_default():
+                click.confirm(CONFIRM_DELETE % name, abort=True)
+            remove(name)
+            continue
+        # assume *name* is actually the path to a file
+        file = name
+        file = os.path.realpath(file)
+        name = name_from_file(file)
+        conf = get_file(name)
+        try:
+            parsedconf = parse(conf, recurse=False)
+        except FileNotFoundError:
+            pass
+        else:
+            configured = parsedconf['score.init']['based_on']
+            if file != configured:
+                confirmed = click.confirm(CONFIRM_DELETE_WRONG_PATH.format(
+                    name=name,
+                    real=configured,
+                    provided=file,
+                ))
+                if not confirmed:
+                    continue
         remove(name)
-        return
-    # assume *name* is actually the path to a file
-    file = name
-    file = os.path.realpath(file)
-    name = name_from_file(file)
-    conf = get_file(name)
-    try:
-        parsedconf = parse(conf, recurse=False)
-    except FileNotFoundError:
-        pass
-    else:
-        configured = parsedconf['score.init']['based_on']
-        if file != configured:
-            click.confirm(CONFIRM_DELETE_WRONG_PATH.format(
-                name=name,
-                real=configured,
-                provided=file,
-            ), abort=True)
-    remove(name)
 
 
 @main.command('dump')
