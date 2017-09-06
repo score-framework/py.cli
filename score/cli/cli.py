@@ -104,7 +104,7 @@ CONFIRM_DELETE_WRONG_PATH = \
     'Proceed anyway and delete configuration `{name}\'? '
 
 
-@main.command('remove')
+@main.command('rm')
 @click.argument('name')
 def remove_(name):
     """
