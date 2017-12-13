@@ -31,7 +31,7 @@ from .setup import main as setup
 
 __all__ = ('ScoreCLI', 'main', 'setup')
 
-__version__ = '0.3.4'
+__version__ = '0.3.5'
 
 if __name__ == '__main__':
     main()
