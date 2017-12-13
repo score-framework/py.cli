@@ -81,6 +81,10 @@ def conf_add(file, name=None, make_default_=False):
     if name is None:
         name = name_from_file(file)
     make_default_ = make_default_ or not name2file()
+    if not os.path.exists(file):
+        raise click.UsageError('File does not exist')
+    if not os.path.isfile(file):
+        raise click.UsageError('Path is not a file')
     add(name, file)
     if make_default_:
         make_default(name)
