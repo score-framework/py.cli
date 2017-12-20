@@ -75,6 +75,8 @@ taking care of shell commands.
 Details
 =======
 
+.. _cli_command_aggregation:
+
 CLI Command Aggregation
 -----------------------
 
