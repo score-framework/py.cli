@@ -1,5 +1,5 @@
 # vim: set fileencoding=UTF-8
-# Copyright © 2015-2017 STRG.AT GmbH, Vienna, Austria
+# Copyright © 2015-2018 STRG.AT GmbH, Vienna, Austria
 #
 # This file is part of the The SCORE Framework.
 #
@@ -30,7 +30,7 @@ from .clibase import ScoreCLI, main
 
 __all__ = ('ScoreCLI', 'main')
 
-__version__ = '0.3.5'
+__version__ = '0.4.0'
 
 if __name__ == '__main__':
     main()
