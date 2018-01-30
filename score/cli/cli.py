@@ -144,14 +144,17 @@ def remove_(name):
 
 
 @main.command('dump')
+@click.argument('sections', nargs=-1)
 @click.pass_context
-def dump(clickctx):
+def dump(clickctx, sections):
     """
     Prints the current configuration.
     """
     confdict = clickctx.obj['conf'].parse()
     for section in confdict:
         if section == 'DEFAULT':
+            continue
+        if sections and section not in sections:
             continue
         print('[%s]' % section)
         for key in confdict[section]:
