@@ -156,7 +156,11 @@ def dump(clickctx):
         print('[%s]' % section)
         for key in confdict[section]:
             value = confdict[section][key]
-            if key in confdict['DEFAULT'] and confdict['DEFAULT'][key] == value:
+            is_default = (
+                'DEFAULT' in confdict and
+                key in confdict['DEFAULT'] and
+                confdict['DEFAULT'][key] == value)
+            if is_default:
                 continue
             if '\n' in value and value[0] != '\n':
                 value = '\n' + value
