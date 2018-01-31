@@ -42,7 +42,7 @@ setup(
     author_email='score@strg.at',
     url='http://score-framework.org',
     keywords='score framework cli click',
-    packages=['score', 'score.cli', 'score.cli.setup'],
+    packages=['score', 'score.cli'],
     namespace_packages=['score'],
     zip_safe=False,
     license='LGPL',
@@ -68,11 +68,6 @@ setup(
         ],
         'score.cli': [
             'conf = score.cli.cli:main',
-        ],
-        'score.cli.setup': [
-            'update_windows_path = score.cli.setup:AddToWindowsPath',
-            'update_bashrc_path = score.cli.setup:AddToBashrcPath',
-            'update_zshrc_path = score.cli.setup:AddToZshrcPath',
         ],
     },
 )
