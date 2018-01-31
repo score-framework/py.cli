@@ -35,7 +35,7 @@ with open(os.path.join(here, 'README.rst')) as f:
 
 setup(
     name='score.cli',
-    version='0.4.0',
+    version='0.4.1',
     description='Command line interface to The SCORE Framework',
     long_description=README,
     author='strg.at',
