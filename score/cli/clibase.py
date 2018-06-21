@@ -73,9 +73,9 @@ class Configuration:
     def parse(self):
         return parse_config_file(self.path)
 
-    def load(self, module=None):
+    def load(self, module=None, *, overrides={}):
         if self._conf is None:
-            self._conf = init_from_file(self.path)
+            self._conf = init_from_file(self.path, overrides=overrides)
         if module is None:
             return self._conf
         return getattr(self._conf, module)
