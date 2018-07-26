@@ -1,5 +1,5 @@
 # vim: set fileencoding=UTF-8
-# Copyright © 2015-2017 STRG.AT GmbH, Vienna, Austria
+# Copyright © 2015-2018 STRG.AT GmbH, Vienna, Austria
 #
 # This file is part of the The SCORE Framework.
 #
@@ -35,7 +35,7 @@ with open(os.path.join(here, 'README.rst')) as f:
 
 setup(
     name='score.cli',
-    version='0.4.2',
+    version='0.4.3',
     description='Command line interface to The SCORE Framework',
     long_description=README,
     author='strg.at',
