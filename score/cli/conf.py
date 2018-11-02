@@ -1,12 +1,11 @@
-# vim: set fileencoding=UTF-8
 # Copyright © 2015-2018 STRG.AT GmbH, Vienna, Austria
 #
 # This file is part of the The SCORE Framework.
 #
 # The SCORE Framework and all its parts are free software: you can redistribute
 # them and/or modify them under the terms of the GNU Lesser General Public
-# License version 3 as published by the Free Software Foundation which is in the
-# file named COPYING.LESSER.txt.
+# License version 3 as published by the Free Software Foundation which is in
+# the file named COPYING.LESSER.txt.
 #
 # The SCORE Framework and all its parts are distributed without any WARRANTY;
 # without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
@@ -22,8 +21,8 @@
 # concerning this License-Agreement including the issue of its valid conclusion
 # and its pre- and post-contractual effects are exclusively decided by the
 # competent court, in whose district STRG.AT GmbH has its registered seat, at
-# the discretion of STRG.AT GmbH also the competent court, in whose district the
-# Licensee has his registered seat, an establishment or assets.
+# the discretion of STRG.AT GmbH also the competent court, in whose district
+# the Licensee has his registered seat, an establishment or assets.
 
 import os
 import sys
@@ -48,8 +47,8 @@ def venv_root(venv=None):
 
     In order to provide a similar interface to the other functions in this
     package, it also accepts a *venv* parameter. Since that parameter is
-    expected to be the root of a virtual environment, it will be returned, if it
-    is passed.
+    expected to be the root of a virtual environment, it will be returned, if
+    it is passed.
     """
     if venv is not None:
         return venv
@@ -109,7 +108,8 @@ def add(name, path, *, venv=None):
     not `None`. The specifics of this behaviour is documented in
     :func:`.rootdir`.
     """
-    if name.startswith('__') or not re.match('^[a-zA-Z_][a-zA-Z0-9_-]*$', name):
+    valid_name_regex = r'^[a-zA-Z_][a-zA-Z0-9_-]*$'
+    if name.startswith('__') or not re.match(valid_name_regex, name):
         raise InvalidConfigurationNameException(name)
     root = rootdir(venv=venv)
     root = os.path.join(root, 'conf')
@@ -224,7 +224,8 @@ def global_file():
     Returns the path to the global configuration file.
 
     Although the return value of this function is always the same, it ensures
-    that the file actually exists by creating it with some informative comments.
+    that the file actually exists by creating it with some informative
+    comments.
     """
     file = os.path.join(rootdir(global_=True), 'conf', '__global__')
     os.makedirs(os.path.dirname(file), exist_ok=True)
