@@ -24,10 +24,10 @@
 # the discretion of STRG.AT GmbH also the competent court, in whose district
 # the Licensee has his registered seat, an establishment or assets.
 
-from .clibase import ScoreCLI, main
+from .clibase import ScoreCLI, main, init_score
 
 
-__all__ = ('ScoreCLI', 'main')
+__all__ = ('ScoreCLI', 'main', 'init_score')
 
 __version__ = '0.4.3'
 

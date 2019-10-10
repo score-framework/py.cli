@@ -24,12 +24,15 @@
 # the discretion of STRG.AT GmbH also the competent court, in whose district
 # the Licensee has his registered seat, an establishment or assets.
 
-import click
-from pkg_resources import iter_entry_points
-from .conf import default_file, get_file
-from score.init import init_from_file, parse_config_file
 import logging
+import functools
+from pkg_resources import iter_entry_points
 import os
+
+import click
+from score.init import init_from_file, parse_config_file
+
+from .conf import default_file, get_file
 
 
 class ScoreCLI(click.MultiCommand):
@@ -91,6 +94,18 @@ def main(ctx, conf=None):
         'conf': Configuration(conf),
         'log': logger,
     }
+
+
+def init_score(callback):
+    """
+    Decorator for click commands that passes the initialized score application.
+    """
+    @click.pass_context
+    @functools.wraps(callback)
+    def wrapped(clickctx, *args, **kwargs):
+        score = clickctx.obj['conf'].load()
+        return callback(score, *args, **kwargs)
+    return wrapped
 
 
 if __name__ == '__main__':
