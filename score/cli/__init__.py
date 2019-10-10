@@ -29,7 +29,7 @@ from .clibase import ScoreCLI, main, init_score
 
 __all__ = ('ScoreCLI', 'main', 'init_score')
 
-__version__ = '0.4.3'
+__version__ = '0.4.4'
 
 if __name__ == '__main__':
     main()
